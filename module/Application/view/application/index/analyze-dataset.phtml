@@ -1,0 +1,32 @@
+<h1>Analyze Dataset</h1>
+
+<?php if (!empty($this->error)): ?>
+    <p style="color:red;">Error: <?= $this->escapeHtml($this->error) ?></p>
+<?php else: ?>
+
+    <p><strong>Total Rows:</strong> <?= $this->escapeHtml($this->total_rows) ?></p>
+    <p><strong>Unique Careers:</strong> <?= $this->escapeHtml($this->unique_careers) ?></p>
+    <p><strong>Columns:</strong> <?= $this->escapeHtml(implode(', ', $this->columns)) ?></p>
+    <p><strong>Missing Values:</strong> <?= $this->escapeHtml($this->missing_values) ?></p>
+
+    <h2>Sample Rows</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <?php foreach ($this->columns as $col): ?>
+                    <th><?= $this->escapeHtml($col) ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($this->sample as $row): ?>
+                <tr>
+                    <?php foreach ($this->columns as $col): ?>
+                        <td><?= $this->escapeHtml($row[$col] ?? '') ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+<?php endif; ?>

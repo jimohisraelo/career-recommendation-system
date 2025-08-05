@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Career Recommendations</title>
+</head>
+<body>
+    <h1>Career Recommendations</h1>
+    <div id="results"></div>
+
+    <script>
+        const data = JSON.parse(localStorage.getItem("careerResults"));
+
+        const container = document.getElementById("results");
+
+        if (!data || data.error) {
+            container.innerHTML = `<p style="color:red;">${data?.error || 'No data found.'}</p>`;
+        } else {
+            container.innerHTML = `<h3>Top Career Recommendations:</h3><ul>`;
+            data.matches.forEach(match => {
+                container.innerHTML += `
+                    <li>
+                        <strong>${match.career}</strong> — Confidence: ${match.confidence || (match.score * 100).toFixed(2)}%<br/>
+                        Reason: ${match.reason || "N/A"}
+                    </li><br/>
+                `;
+            });
+            container.innerHTML += `</ul>`;
+        }
+    </script>
+</body>
+</html>

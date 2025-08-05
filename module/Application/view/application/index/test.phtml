@@ -1,0 +1,2329 @@
+<?php
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Recommendation Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Exo 2', sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        h2,
+        h3 {
+            color: #4CAF50;
+        }
+
+        .section {
+            display: none;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background: #eee;
+            height: 15px;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #8BC34A, #4CAF50);
+            border-radius: 10px;
+            transition: width 0.5s ease-out;
+        }
+
+        .trait-section {
+            margin: 35px 0;
+            padding: 25px;
+            border-left: 5px solid #4CAF50;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05) inset;
+        }
+
+        .question {
+            margin: 25px 0;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-around;
+            /* Default: Horizontal layout - space around labels */
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        .likert-scale label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 15px;
+            color: #666;
+            text-align: center;
+        }
+
+        .welcome-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        input,
+        button {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        input {
+            border: 1px solid #ddd;
+        }
+
+        .likert-scale input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            background-color: #fff;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            margin-bottom: 4px;
+        }
+
+        .likert-scale input[type="radio"]:checked {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .likert-scale label:hover {
+            color: #333;
+        }
+
+        button {
+            background: linear-gradient(135deg, #8BC34A, #4CAF50);
+            color: #fff;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .career {
+            padding: 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 5px solid #4CAF50;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05) inset;
+        }
+
+        .career h3 {
+            margin-bottom: 10px;
+        }
+
+        .question img {
+            max-width: 150px;
+            margin: 15px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-container {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .timer-container.warning {
+            background: #f44336;
+            animation: pulse 1s infinite;
+        }
+
+        .question-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 16px;
+            background-color: #fdfdfd;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .question-image {
+            display: block;
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            margin: 0 auto 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .question-image:hover {
+            transform: scale(1.05);
+        }
+
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-option {
+            padding: 12px 16px;
+            background-color: #eef2f7;
+            border: 1px solid #d0d6e2;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.25s;
+        }
+
+        .answer-option:hover {
+            background-color: #dbe5f1;
+        }
+
+        .answer-option input {
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Media Query for Small Screens (e.g., mobile) */
+        @media (max-width: 600px) {
+
+            /* Apply styles when screen width is 600px or less */
+            .likert-scale {
+                flex-direction: column;
+                /* Stack labels vertically */
+                justify-content: center;
+                /* Center items in column (optional, for alignment) */
+                align-items: stretch;
+                /* Stretch labels to full width of likert-scale */
+            }
+
+            .likert-scale label {
+                flex-direction: row;
+                /* Arrange radio and text in a row inside each label */
+                justify-content: flex-start;
+                /* Align radio button to the start of the label */
+                text-align: left;
+                /* Left-align the text now that it's in a row */
+                margin: 10px 0;
+                /* Add vertical margin between labels */
+            }
+
+            .likert-scale input[type="radio"] {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+        }
+
+        /* Font Import (if using Google Fonts) */
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap');
+    </style>
+</head>
+
+<body>
+    <div class="welcome-container">
+        <h1>Career Recommendation Engine</h1>
+        <!-- <p>Discover careers matching your personality and cognitive strengths.</p>
+        <form id="userForm">
+            <input type="text" name="username" placeholder="Enter your name" required>
+            <button type="submit">Start Assessment</button>
+        </form> -->
+    </div>
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- Personality Section -->
+    <div class="section active" id="personality-section">
+        <h2>Personality Assessment (OCEAN Model)</h2>
+
+        <div class="trait-section">
+            <h3>Openness to Experience</h3>
+            <div class="question">
+                <p>1. I enjoy trying new and foreign foods.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="openness_1" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="openness_1" value="2">Disagree</label>
+                    <label><input type="radio" name="openness_1" value="3">Neutral</label>
+                    <label><input type="radio" name="openness_1" value="4">Agree</label>
+                    <label><input type="radio" name="openness_1" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>2. I am open to new ideas and ways of doing things.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="openness_2" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="openness_2" value="2">Disagree</label>
+                    <label><input type="radio" name="openness_2" value="3">Neutral</label>
+                    <label><input type="radio" name="openness_2" value="4">Agree</label>
+                    <label><input type="radio" name="openness_2" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. I appreciate art and beauty.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="openness_3" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="openness_3" value="2">Disagree</label>
+                    <label><input type="radio" name="openness_3" value="3">Neutral</label>
+                    <label><input type="radio" name="openness_3" value="4">Agree</label>
+                    <label><input type="radio" name="openness_3" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>4. I prefer routines and stick to what I know.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="openness_4" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="openness_4" value="2">Disagree</label>
+                    <label><input type="radio" name="openness_4" value="3">Neutral</label>
+                    <label><input type="radio" name="openness_4" value="4">Agree</label>
+                    <label><input type="radio" name="openness_4" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>5. I like to engage in abstract or philosophical thinking.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="openness_5" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="openness_5" value="2">Disagree</label>
+                    <label><input type="radio" name="openness_5" value="3">Neutral</label>
+                    <label><input type="radio" name="openness_5" value="4">Agree</label>
+                    <label><input type="radio" name="openness_5" value="5">Strongly agree</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="trait-section">
+            <h3>Conscientiousness</h3>
+            <div class="question">
+                <p>1. I pay attention to details.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="conscientiousness_1" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="conscientiousness_1" value="2">Disagree</label>
+                    <label><input type="radio" name="conscientiousness_1" value="3">Neutral</label>
+                    <label><input type="radio" name="conscientiousness_1" value="4">Agree</label>
+                    <label><input type="radio" name="conscientiousness_1" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>2. I make plans and stick to them.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="conscientiousness_2" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="conscientiousness_2" value="2">Disagree</label>
+                    <label><input type="radio" name="conscientiousness_2" value="3">Neutral</label>
+                    <label><input type="radio" name="conscientiousness_2" value="4">Agree</label>
+                    <label><input type="radio" name="conscientiousness_2" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. I tend to forget things and often feel disorganized.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="conscientiousness_3" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="conscientiousness_3" value="2">Disagree</label>
+                    <label><input type="radio" name="conscientiousness_3" value="3">Neutral</label>
+                    <label><input type="radio" name="conscientiousness_3" value="4">Agree</label>
+                    <label><input type="radio" name="conscientiousness_3" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>4. I follow a schedule.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="conscientiousness_4" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="conscientiousness_4" value="2">Disagree</label>
+                    <label><input type="radio" name="conscientiousness_4" value="3">Neutral</label>
+                    <label><input type="radio" name="conscientiousness_4" value="4">Agree</label>
+                    <label><input type="radio" name="conscientiousness_4" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>5. I am very detail-oriented and dislike making mistakes.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="conscientiousness_5" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="conscientiousness_5" value="2">Disagree</label>
+                    <label><input type="radio" name="conscientiousness_5" value="3">Neutral</label>
+                    <label><input type="radio" name="conscientiousness_5" value="4">Agree</label>
+                    <label><input type="radio" name="conscientiousness_5" value="5">Strongly agree</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="trait-section">
+            <h3>Extraversion</h3>
+            <div class="question">
+                <p>1. I feel comfortable around people.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="extraversion_1" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="extraversion_1" value="2">Disagree</label>
+                    <label><input type="radio" name="extraversion_1" value="3">Neutral</label>
+                    <label><input type="radio" name="extraversion_1" value="4">Agree</label>
+                    <label><input type="radio" name="extraversion_1" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>2. I start conversations.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="extraversion_2" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="extraversion_2" value="2">Disagree</label>
+                    <label><input type="radio" name="extraversion_2" value="3">Neutral</label>
+                    <label><input type="radio" name="extraversion_2" value="4">Agree</label>
+                    <label><input type="radio" name="extraversion_2" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. I am the life of the party.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="extraversion_3" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="extraversion_3" value="2">Disagree</label>
+                    <label><input type="radio" name="extraversion_3" value="3">Neutral</label>
+                    <label><input type="radio" name="extraversion_3" value="4">Agree</label>
+                    <label><input type="radio" name="extraversion_3" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>4. I talk to many people at social events.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="extraversion_4" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="extraversion_4" value="2">Disagree</label>
+                    <label><input type="radio" name="extraversion_4" value="3">Neutral</label>
+                    <label><input type="radio" name="extraversion_4" value="4">Agree</label>
+                    <label><input type="radio" name="extraversion_4" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>5. I enjoy being the center of attention.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="extraversion_5" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="extraversion_5" value="2">Disagree</label>
+                    <label><input type="radio" name="extraversion_5" value="3">Neutral</label>
+                    <label><input type="radio" name="extraversion_5" value="4">Agree</label>
+                    <label><input type="radio" name="extraversion_5" value="5">Strongly agree</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="trait-section">
+            <h3>Agreeableness</h3>
+            <div class="question">
+                <p>1. I sympathize with others' feelings.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="agreeableness_1" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="agreeableness_1" value="2">Disagree</label>
+                    <label><input type="radio" name="agreeableness_1" value="3">Neutral</label>
+                    <label><input type="radio" name="agreeableness_1" value="4">Agree</label>
+                    <label><input type="radio" name="agreeableness_1" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>2. I respect others' opinions.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="agreeableness_2" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="agreeableness_2" value="2">Disagree</label>
+                    <label><input type="radio" name="agreeableness_2" value="3">Neutral</label>
+                    <label><input type="radio" name="agreeableness_2" value="4">Agree</label>
+                    <label><input type="radio" name="agreeableness_2" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. I find it easy to compromise when there is a conflict</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="agreeableness_3" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="agreeableness_3" value="2">Disagree</label>
+                    <label><input type="radio" name="agreeableness_3" value="3">Neutral</label>
+                    <label><input type="radio" name="agreeableness_3" value="4">Agree</label>
+                    <label><input type="radio" name="agreeableness_3" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>4. I try to avoid arguing and prefer to go along with others.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="agreeableness_4" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="agreeableness_4" value="2">Disagree</label>
+                    <label><input type="radio" name="agreeableness_4" value="3">Neutral</label>
+                    <label><input type="radio" name="agreeableness_4" value="4">Agree</label>
+                    <label><input type="radio" name="agreeableness_4" value="5">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>5. I try to avoid arguing and prefer to go along with others.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="agreeableness_5" value="1">Strongly disagree</label>
+                    <label><input type="radio" name="agreeableness_5" value="2">Disagree</label>
+                    <label><input type="radio" name="agreeableness_5" value="3">Neutral</label>
+                    <label><input type="radio" name="agreeableness_5" value="4">Agree</label>
+                    <label><input type="radio" name="agreeableness_5" value="5">Strongly agree</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="trait-section">
+            <h3>Neuroticism</h3>
+            <div class="question">
+                <p>1. I often feel anxious or worried about different aspects of life.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="neuroticism_1" value="5">Strongly disagree</label>
+                    <label><input type="radio" name="neuroticism_1" value="4">Disagree</label>
+                    <label><input type="radio" name="neuroticism_1" value="3">Neutral</label>
+                    <label><input type="radio" name="neuroticism_1" value="2">Agree</label>
+                    <label><input type="radio" name="neuroticism_1" value="1">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>2. I worry about small things.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="neuroticism_2" value="5">Strongly disagree</label>
+                    <label><input type="radio" name="neuroticism_2" value="4">Disagree</label>
+                    <label><input type="radio" name="neuroticism_2" value="3">Neutral</label>
+                    <label><input type="radio" name="neuroticism_2" value="2">Agree</label>
+                    <label><input type="radio" name="neuroticism_2" value="1">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. I feel stressed easily.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="neuroticism_3" value="5">Strongly disagree</label>
+                    <label><input type="radio" name="neuroticism_3" value="4">Disagree</label>
+                    <label><input type="radio" name="neuroticism_3" value="3">Neutral</label>
+                    <label><input type="radio" name="neuroticism_3" value="2">Agree</label>
+                    <label><input type="radio" name="neuroticism_3" value="1">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>4. I frequently feel sad or down, even for no reason.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="neuroticism_4" value="5">Strongly disagree</label>
+                    <label><input type="radio" name="neuroticism_4" value="4">Disagree</label>
+                    <label><input type="radio" name="neuroticism_4" value="3">Neutral</label>
+                    <label><input type="radio" name="neuroticism_4" value="2">Agree</label>
+                    <label><input type="radio" name="neuroticism_4" value="1">Strongly agree</label>
+                </div>
+            </div>
+            <div class="question">
+                <p>5. I get angry quickly.</p>
+                <div class="likert-scale">
+                    <label><input type="radio" name="neuroticism_5" value="5">Strongly disagree</label>
+                    <label><input type="radio" name="neuroticism_5" value="4">Disagree</label>
+                    <label><input type="radio" name="neuroticism_5" value="3">Neutral</label>
+                    <label><input type="radio" name="neuroticism_5" value="2">Agree</label>
+                    <label><input type="radio" name="neuroticism_5" value="1">Strongly agree</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button type="button" onclick="nextSection('aptitude-section')">Next →</button>
+        </div>
+    </div>
+
+    <!-- Cognitive Test Sections -->
+    <div class="section" id="aptitude-section">
+        <h2>Cognitive Aptitude Tests - Numerical Reasoning</h2>
+        <div class="timer-container">
+            Time Remaining: <span id="timer-minutes">05</span>:<span id="timer-seconds">00</span>
+        </div>
+        <div class="trait-section" id="numerical-questions-container"></div>
+        <div class="nav-buttons">
+            <button type="button" onclick="prevSection('personality-section')">← Back</button>
+            <button type="button" onclick="nextSection('verbal-section')">Next →</button>
+        </div>
+    </div>
+
+    <div class="section" id="verbal-section">
+        <h2>Cognitive Aptitude Tests - Verbal Reasoning</h2>
+        <div class="timer-container">
+            Time Remaining: <span id="timer-minutes">05</span>:<span id="timer-seconds">00</span>
+        </div>
+        <div class="trait-section" id="verbal-reasoning-questions-container"></div>
+        <div class="nav-buttons">
+            <button type="button" onclick="prevSection('aptitude-section')">← Back</button>
+            <button type="button" onclick="nextSection('perceptual-section')">Next →</button>
+        </div>
+    </div>
+
+    <div class="section" id="perceptual-section">
+        <h2>Cognitive Aptitude Tests - Perceptual Aptitude</h2>
+        <div class="trait-section" id="perceptual-aptitude-questions-container"></div>
+        <div class="nav-buttons">
+            <button type="button" onclick="prevSection('verbal-section')">← Back</button>
+            <button type="button" onclick="nextSection('abstract-section')">Next →</button>
+        </div>
+    </div>
+
+    <div class="section" id="abstract-section">
+        <h2>Cognitive Aptitude Tests - Abstract Reasoning</h2>
+        <div class="trait-section" id="abstract-reasoning-questions-container"></div>
+        <div class="nav-buttons">
+            <button type="button" onclick="prevSection('perceptual-section')">← Back</button>
+            <button type="button" onclick="nextSection('spatial-section')">Next →</button>
+        </div>
+    </div>
+
+    <div class="section" id="spatial-section">
+        <h2>Cognitive Aptitude Tests - Spatial Reasoning</h2>
+        <div class="trait-section" id="spatial-questions-container"></div>
+        <div class="nav-buttons">
+            <button type="button" onclick="prevSection('abstract-section')">← Back</button>
+            <button type="button" onclick="showResults()">Submit</button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="section" id="results-section">
+        <h2>Your Career Recommendations</h2>
+        <div id="career-results"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let timer;
+        let timeLeft = 300;
+        let currentTestSection = null;
+        let questionStartTimes = {};
+        let currentSection = 0;
+        const sections = document.querySelectorAll('.section');
+
+        // Question data
+        const numericalQuestionsData = [ /* ... numericalQuestionsData array ... */ {
+                questionText: "A train travels 300 km in 2.5 hours. What's its average speed?",
+                answerChoices: [{
+                        text: "60 km",
+                        value: "60"
+                    },
+                    {
+                        text: "240 km",
+                        value: "240"
+                    },
+                    {
+                        text: "3600 km",
+                        value: "3600"
+                    },
+                    {
+                        text: "120 km",
+                        value: "120"
+                    }
+                ],
+                correctAnswer: "120",
+                questionName: "numerical_1"
+            },
+            {
+                questionText: "What is 25% of 80?",
+                answerChoices: [{
+                        text: "10",
+                        value: "10"
+                    },
+                    {
+                        text: "20",
+                        value: "20"
+                    },
+                    {
+                        text: "30",
+                        value: "30"
+                    },
+                    {
+                        text: "25",
+                        value: "25"
+                    }
+                ],
+                correctAnswer: "20",
+                questionName: "numerical_2"
+            },
+            {
+                questionText: "If 5 apples cost $2.50, how much do 8 apples cost?",
+                answerChoices: [{
+                        text: "$3.00",
+                        value: "3"
+                    },
+                    {
+                        text: "$4.00",
+                        value: "4"
+                    },
+                    {
+                        text: "$5.00",
+                        value: "5"
+                    },
+                    {
+                        text: "$6.00",
+                        value: "6"
+                    }
+                ],
+                correctAnswer: "4",
+                questionName: "numerical_3"
+            },
+            {
+                questionText: "Solve: 15 + (3 x 6) - 12 / 2 = ?",
+                answerChoices: [{
+                        text: "27",
+                        value: "27"
+                    },
+                    {
+                        text: "15",
+                        value: "15"
+                    },
+                    {
+                        text: "24",
+                        value: "24"
+                    },
+                    {
+                        text: "36",
+                        value: "36"
+                    }
+                ],
+                correctAnswer: "27",
+                questionName: "numerical_4"
+            },
+            {
+                questionText: "If 3 machines produce 90 units in 2 hours, how many units will 5 machines produce in 4 hours?",
+                answerChoices: [{
+                        text: "180",
+                        value: "180"
+                    },
+                    {
+                        text: "240",
+                        value: "240"
+                    },
+                    {
+                        text: "300",
+                        value: "300"
+                    },
+                    {
+                        text: "120",
+                        value: "120"
+                    }
+                ],
+                correctAnswer: "300",
+                questionName: "numerical_5"
+            },
+            {
+                questionText: "For the equation y = 4x + 8, what will the value of y equal when x is equal to 11?",
+                answerChoices: [{
+                        text: "22",
+                        value: "22"
+                    },
+                    {
+                        text: "12",
+                        value: "12"
+                    },
+                    {
+                        text: "15",
+                        value: "15"
+                    },
+                    {
+                        text: "52",
+                        value: "52"
+                    }
+                ],
+                correctAnswer: "52",
+                questionName: "numerical_6"
+            },
+            {
+                questionText: "Calculate: 20% of 50 + 23.5 = ?",
+                answerChoices: [{
+                        text: "15.75",
+                        value: "15.75"
+                    },
+                    {
+                        text: "20",
+                        value: "20"
+                    },
+                    {
+                        text: "23.5",
+                        value: "23.5"
+                    },
+                    {
+                        text: "33.5",
+                        value: "33.5"
+                    }
+                ],
+                correctAnswer: "33.5",
+                questionName: "numerical_7"
+            },
+            {
+                questionText: "How many primes between 1-100 end with a 9?",
+                answerChoices: [{
+                        text: "5",
+                        value: "5"
+                    },
+                    {
+                        text: "22",
+                        value: "22"
+                    },
+                    {
+                        text: "3",
+                        value: "3"
+                    },
+                    {
+                        text: "10",
+                        value: "10"
+                    }
+                ],
+                correctAnswer: "5",
+                questionName: "numerical_8"
+            },
+            {
+                questionText: "What is the value of 7 x 8 - 40?",
+                answerChoices: [{
+                        text: "12",
+                        value: "12"
+                    },
+                    {
+                        text: "16",
+                        value: "16"
+                    },
+                    {
+                        text: "24",
+                        value: "24"
+                    },
+                    {
+                        text: "52",
+                        value: "52"
+                    }
+                ],
+                correctAnswer: "16",
+                questionName: "numerical_9"
+            },
+            {
+                questionText: "The ratio of boys to girls in a class is 3:2. If there are 45 students, how many girls are there?",
+                answerChoices: [{
+                        text: "18",
+                        value: "18"
+                    },
+                    {
+                        text: "36",
+                        value: "36"
+                    },
+                    {
+                        text: "72",
+                        value: "72"
+                    },
+                    {
+                        text: "42",
+                        value: "42"
+                    }
+                ],
+                correctAnswer: "18",
+                questionName: "numerical_10"
+            }
+        ];
+
+        const verbalReasoningQuestionsData = [{
+                questionText: "Choose the word that is most similar in meaning to 'benevolent'.",
+                answerChoices: [{
+                        text: "Malicious",
+                        value: "Malicious"
+                    },
+                    {
+                        text: "Kind",
+                        value: "Kind"
+                    },
+                    {
+                        text: "Greedy",
+                        value: "Greedy"
+                    },
+                    {
+                        text: "Selfish",
+                        value: "Selfish"
+                    }
+                ],
+                correctAnswer: "Kind",
+                questionName: "verbal_1"
+            },
+            {
+                questionText: "Statement: 'Investing in renewable energy sources can reduce environmental pollution and dependence on fossil fuels.' What is the logical conclusion based on this statement?",
+                answerChoices: [{
+                        text: "Renewable energy sources may help reduce pollution.",
+                        value: "Pessimistic"
+                    },
+                    {
+                        text: "Renewable energy sources are harmful to the environment.",
+                        value: "Hopeful"
+                    },
+                    {
+                        text: "Fossil fuels are the primary source of energy.",
+                        value: "Cheerful"
+                    },
+                    {
+                        text: "None of the above",
+                        value: "Positive"
+                    }
+                ],
+                correctAnswer: "Pessimistic",
+                questionName: "verbal_2"
+            },
+            {
+                questionText: "Passage: Recent studies have shown that the global economy is undergoing a massive shift, with digital transformation at the forefront of many industries. As companies invest in new technologies, they are prioritizing innovation and flexibility. This shift is expected to create jobs in sectors such as artificial intelligence, robotics, and data analytics. Question: Which of the following industries is most likely to benefit from the global economic shift mentioned in the passage?",
+                answerChoices: [{
+                        text: "Artificial Intelligence",
+                        value: "Client"
+                    },
+                    {
+                        text: "Agriculture",
+                        value: "Judge"
+                    },
+                    {
+                        text: "Education",
+                        value: "Criminal"
+                    },
+                    {
+                        text: "Entertainment",
+                        value: "Police"
+                    }
+                ],
+                correctAnswer: "Client",
+                questionName: "verbal_3"
+            },
+            {
+                questionText: "Identify the sentence with the correct grammar.",
+                answerChoices: [{
+                        text: "He don't like apples.",
+                        value: "incorrect1"
+                    },
+                    {
+                        text: "He doesn't likes apples.",
+                        value: "incorrect2"
+                    },
+                    {
+                        text: "He doesn't like apples.",
+                        value: "correct"
+                    },
+                    {
+                        text: "He not like apples.",
+                        value: "incorrect3"
+                    }
+                ],
+                correctAnswer: "correct",
+                questionName: "verbal_4"
+            },
+            {
+                questionText: "Choose the synonym for 'ambiguous'.",
+                answerChoices: [{
+                        text: "Clear",
+                        value: "Clear"
+                    },
+                    {
+                        text: "Vague",
+                        value: "Vague"
+                    },
+                    {
+                        text: "Precise",
+                        value: "Precise"
+                    },
+                    {
+                        text: "Obvious",
+                        value: "Obvious"
+                    }
+                ],
+                correctAnswer: "Vague",
+                questionName: "verbal_5"
+            },
+            {
+                questionText: "Which of these words does NOT belong with the others?",
+                answerChoices: [{
+                        text: "Apple",
+                        value: "Apple"
+                    },
+                    {
+                        text: "Banana",
+                        value: "Banana"
+                    },
+                    {
+                        text: "Orange",
+                        value: "Orange"
+                    },
+                    {
+                        text: "Carrot",
+                        value: "Carrot"
+                    }
+                ],
+                correctAnswer: "Carrot",
+                questionName: "verbal_6"
+            },
+            {
+                questionText: "Select the best definition of 'ubiquitous'.",
+                answerChoices: [{
+                        text: "Rare",
+                        value: "Rare"
+                    },
+                    {
+                        text: "Common",
+                        value: "Common"
+                    },
+                    {
+                        text: "Hidden",
+                        value: "Hidden"
+                    },
+                    {
+                        text: "Unique",
+                        value: "Unique"
+                    }
+                ],
+                correctAnswer: "Common",
+                questionName: "verbal_7"
+            },
+            {
+                questionText: "Complete the sentence: 'Although it was raining, ______.'",
+                answerChoices: [{
+                        text: "but they went for a walk",
+                        value: "incorrect1"
+                    },
+                    {
+                        text: "so they stayed inside",
+                        value: "incorrect2"
+                    },
+                    {
+                        text: "they still went for a walk",
+                        value: "correct"
+                    },
+                    {
+                        text: "and they took umbrellas",
+                        value: "incorrect3"
+                    }
+                ],
+                correctAnswer: "correct",
+                questionName: "verbal_8"
+            },
+            {
+                questionText: "What is the meaning of the idiom 'to bite the bullet'?",
+                answerChoices: [{
+                        text: "To avoid a problem",
+                        value: "Avoid"
+                    },
+                    {
+                        text: "To exaggerate",
+                        value: "Exaggerate"
+                    },
+                    {
+                        text: "To face a difficult situation with courage",
+                        value: "Face"
+                    },
+                    {
+                        text: "To be easily fooled",
+                        value: "Fooled"
+                    }
+                ],
+                correctAnswer: "Face",
+                questionName: "verbal_9"
+            },
+            {
+                questionText: "Rearrange the words to make a coherent sentence: 'quickly fox brown the jumped'.",
+                answerChoices: [{
+                        text: "Brown fox jumped quickly the.",
+                        value: "incorrect1"
+                    },
+                    {
+                        text: "The brown fox quickly jumped.",
+                        value: "correct"
+                    },
+                    {
+                        text: "Jumped quickly brown fox the.",
+                        value: "incorrect2"
+                    },
+                    {
+                        text: "Fox brown jumped quickly the.",
+                        value: "incorrect3"
+                    }
+                ],
+                correctAnswer: "correct",
+                questionName: "verbal_10"
+            }
+        ];
+
+        const perceptualQuestionsData = [ /* ... perceptualQuestionsData array ... */ {
+                questionText: "If a complex image is fragmented into several sections, which strategy helps identify the original pattern?",
+                answerChoices: [{
+                        text: "Examine individual sections for consistency",
+                        value: "ON"
+                    },
+                    {
+                        text: "Focus on the central part of the image",
+                        value: "OFF"
+                    },
+                    {
+                        text: "Analyze each color and shade",
+                        value: "OFF"
+                    },
+                    {
+                        text: "Look for unique sections that stand out",
+                        value: "OFF"
+                    }
+                ],
+                correctAnswer: "ON",
+                questionName: "perceptual_1"
+            },
+            {
+                questionText: "What is the first thing to consider when comparing two images with slight differences?",
+                answerChoices: [{
+                        text: "The background details",
+                        value: "OFF"
+                    },
+                    {
+                        text: "The position of objects",
+                        value: "ON"
+                    },
+                    {
+                        text: "The color contrast",
+                        value: "OFF"
+                    },
+                    {
+                        text: "The size of the objects",
+                        value: "OFF"
+                    }
+                ],
+                correctAnswer: "ON", // Example correct answer
+                questionName: "perceptual_2"
+            },
+            {
+                questionText: "Question 3: Find the matching shape from the options that is identical to the target shape, but potentially rotated or scaled. [Imagine a target shape and options A, B, C, D with variations of that shape]",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C", // Example correct answer
+                questionName: "perceptual_3"
+            },
+            {
+                questionText: "In the series below, identify the next letter.  A C E G ? ",
+                answerChoices: [{
+                        text: "H",
+                        value: "H"
+                    },
+                    {
+                        text: "I",
+                        value: "I"
+                    },
+                    {
+                        text: "J",
+                        value: "J"
+                    },
+                    {
+                        text: "K",
+                        value: "K"
+                    }
+                ],
+                correctAnswer: "I", 
+                questionName: "perceptual_4"
+            },
+            {
+                questionText: "Count the number of triangles in the following figure. [Imagine a geometric figure composed of multiple triangles]",
+                answerChoices: [{
+                        text: "5",
+                        value: "5"
+                    },
+                    {
+                        text: "8",
+                        value: "8"
+                    },
+                    {
+                        text: "10",
+                        value: "10"
+                    },
+                    {
+                        text: "12",
+                        value: "12"
+                    }
+                ],
+                correctAnswer: "8", 
+                questionName: "perceptual_5"
+            },
+            {
+                questionText: "Which pattern would you recognize most easily in a series of geometric shapes?",
+                answerChoices: [{
+                        text: "Symmetry",
+                        value: "ON"
+                    },
+                    {
+                        text: "Color repetition",
+                        value: "OFF"
+                    },
+                    {
+                        text: "Shape size consistency",
+                        value: "OFF"
+                    },
+                    {
+                        text: "Object movement",
+                        value: "OFF"
+                    }
+                ],
+                correctAnswer: "ON", 
+                questionName: "perceptual_6"
+            },
+            {
+                questionText: "Find the odd one out: [Options: Apple, Banana, Carrot, Orange]",
+                answerChoices: [{
+                        text: "Apple",
+                        value: "apple"
+                    },
+                    {
+                        text: "Banana",
+                        value: "banana"
+                    },
+                    {
+                        text: "Carrot",
+                        value: "carrot"
+                    },
+                    {
+                        text: "Orange",
+                        value: "orange"
+                    }
+                ],
+                correctAnswer: "carrot", 
+                questionName: "perceptual_7"
+            },
+            {
+                questionText: "Given a list of complex images, which would be the easiest to differentiate?",
+                answerChoices: [{
+                        text: "The image with the fewest shapes",
+                        value: "A"
+                    },
+                    {
+                        text: "The image with the most contrast",
+                        value: "B"
+                    },
+                    {
+                        text: "The image with the sharpest edges",
+                        value: "C"
+                    },
+                    {
+                        text: "The image with the most variety in texture",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "B",
+                questionName: "perceptual_8"
+            },
+            {
+                questionText: "How many times does the digit '3' appear in the numbers from 1 to 50?",
+                answerChoices: [{
+                        text: "10",
+                        value: "10"
+                    },
+                    {
+                        text: "12",
+                        value: "12"
+                    },
+                    {
+                        text: "15",
+                        value: "15"
+                    },
+                    {
+                        text: "18",
+                        value: "18"
+                    }
+                ],
+                correctAnswer: "15", // Example correct answer (3, 13, 23, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 43) - actually 15!
+                questionName: "perceptual_9"
+            },
+            {
+                questionText: "If 'STOP' is written as 'POTS', how would you write 'DOG'?",
+                answerChoices: [{
+                        text: "GOD",
+                        value: "GOD"
+                    },
+                    {
+                        text: "GDO",
+                        value: "GDO"
+                    },
+                    {
+                        text: "ODG",
+                        value: "ODG"
+                    },
+                    {
+                        text: "DGO",
+                        value: "DGO"
+                    }
+                ],
+                correctAnswer: "GOD", // Example correct answer
+                questionName: "perceptual_10"
+            }
+        ];
+
+        const basePath = "<?= $this->basePath('images/') ?>";
+
+        const abstractReasoningQuestionsData = [{
+                questionText: "Identify the pattern and choose the next figure in the sequence?",
+                questionImage: basePath + "question-1-img.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "abstract_1"
+            },
+            {
+                questionText: "Which figure is the odd one out?",
+                questionImage: basePath + "ques_24.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "abstract_2"
+            },
+            {
+                questionText: "Which figure completes the grid?",
+                questionImage: basePath + "ques_22.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "B",
+                questionName: "abstract_3"
+            },
+            {
+                questionText: "Which figure is next in the series?",
+                questionImage: basePath + "ques_21.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "abstract_4"
+            },
+            {
+                questionText: "Which figure completes the series?",
+                questionImage: basePath + "ques_17.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "abstract_5"
+            },
+            {
+                questionText: "Which figure completes the series?",
+                questionImage: basePath + "ques_16.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "abstract_6"
+            },
+            {
+                questionText: "Which figure is the odd one out?",
+                questionImage: basePath + "ques_14.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    },
+                    {
+                        text: "Option E",
+                        value: "E"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "abstract_7"
+            },
+            {
+                questionText: "Which figure is the odd one out?",
+                questionImage: basePath + "ques_13.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "abstract_8"
+            },
+            {
+                questionText: "Which figure is the odd one out?",
+                questionImage: basePath + "ques_11.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "abstract_9"
+            },
+            {
+                questionText: "Which figure completes the statement?",
+                questionImage: basePath + "ques_8.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "abstract_10"
+            }
+        ];
+
+        const spatialQuestionsData = [{
+                questionText: "Which figure is a rotation of the object?",
+                questionImage: basePath + "spa_1.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "B",
+                questionName: "spatial_1"
+            },
+            {
+                questionText: "Which figure is a rotation of the object?",
+                questionImage: basePath + "spa_2.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "spatial_2"
+            },
+            {
+                questionText: "Which of the 4 figures presented (A, B, C, D) is a rotation of the first?",
+                questionImage: basePath + "spa_3.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "spatial_3"
+            },
+            {
+                questionText: "Which piece corresponds to the given solid?",
+                questionImage: basePath + "spa_4.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "spatial_4"
+            },
+            {
+                questionText: "Which piece corresponds to the given solid?",
+                questionImage: basePath + "spa_5.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "D",
+                questionName: "spatial_5"
+            },
+            {
+                questionText: "Which object can be made by folding the given shape?",
+                questionImage: basePath + "spa_6.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "spatial_6"
+            },
+            {
+                questionText: "Which figure can be formed using only 2D rotation?",
+                questionImage: basePath + "spa_7.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "spatial_7"
+            },
+            {
+                questionText: "Which figure can be formed with the given pieces?",
+                questionImage: basePath + "spa_8.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "C",
+                questionName: "spatial_8"
+            },
+            {
+                questionText: "To which object does the given top view correspond?",
+                questionImage: basePath + "spa_9.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "spatial_9"
+            },
+            {
+                questionText: "Which figure is a vertical reflection across the x axis?",
+                questionImage: basePath + "spa_10.png",
+                answerChoices: [{
+                        text: "Option A",
+                        value: "A"
+                    },
+                    {
+                        text: "Option B",
+                        value: "B"
+                    },
+                    {
+                        text: "Option C",
+                        value: "C"
+                    },
+                    {
+                        text: "Option D",
+                        value: "D"
+                    }
+                ],
+                correctAnswer: "A",
+                questionName: "spatial_10"
+            }
+        ];
+
+
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.querySelector('input[name="username"]').value;
+            sessionStorage.setItem('username', username);
+            nextSection('personality-section');
+        });
+
+
+        function nextSection(sectionId) {
+            if (!validateCurrentSection()) return;
+            if (timer) clearInterval(timer);
+
+            document.querySelector('.section.active').classList.remove('active');
+            document.getElementById(sectionId).classList.add('active');
+            currentSection++;
+            updateProgress((currentSection / (sections.length - 1)) * 100);
+
+
+            const cognitiveSections = [
+                'aptitude-section',
+                'verbal-section',
+                'perceptual-section',
+                'abstract-section',
+                'spatial-section'
+            ];
+
+            if (cognitiveSections.includes(sectionId)) {
+                startTimer(sectionId);
+            }
+
+
+            if (sectionId === 'aptitude-section') {
+                loadNumericalQuestions();
+            } else if (sectionId === 'verbal-section') {
+                loadVerbalReasoningQuestions();
+            } else if (sectionId === 'perceptual-section') {
+                loadPerceptualQuestions();
+            } else if (sectionId === 'abstract-section') {
+                loadAbstractReasoningQuestions();
+            } else if (sectionId === 'spatial-section') {
+                loadSpatialQuestions();
+            }
+        }
+
+        function prevSection(sectionId) {
+            if (timer) clearInterval(timer);
+            document.querySelector('.section.active').classList.remove('active');
+            document.getElementById(sectionId).classList.add('active');
+            currentSection--;
+            updateProgress((currentSection / (sections.length - 1)) * 100);
+        }
+
+        // Timer functions
+        function startTimer(sectionId) {
+            currentTestSection = sectionId;
+            timeLeft = 300;
+            updateTimerDisplay();
+
+            if (timer) clearInterval(timer);
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert("Time's up! Moving to the next section.");
+                    autoProceedToNextSection();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const seconds = (timeLeft % 60).toString().padStart(2, '0');
+            const timerDisplay = document.querySelector(`#${currentTestSection} .timer-container`);
+
+            if (timerDisplay) {
+                timerDisplay.innerHTML = `Time Remaining: <span>${minutes}:${seconds}</span>`;
+
+                if (timeLeft <= 30) {
+                    timerDisplay.classList.add('warning');
+                } else {
+                    timerDisplay.classList.remove('warning');
+                }
+            }
+        }
+
+        function autoProceedToNextSection() {
+            const sectionOrder = [
+                'aptitude-section',
+                'verbal-section',
+                'perceptual-section',
+                'abstract-section',
+                'spatial-section'
+            ];
+
+            const currentIndex = sectionOrder.indexOf(currentTestSection);
+            if (currentIndex < sectionOrder.length - 1) {
+                nextSection(sectionOrder[currentIndex + 1]);
+            } else {
+                showResults();
+            }
+        }
+
+        function validateCurrentSection() {
+            const currentSectionEl = document.querySelector('.section.active');
+            const allQuestions = currentSectionEl.querySelectorAll('.question');
+            let unansweredCount = 0;
+
+            allQuestions.forEach(question => {
+                const radios = question.querySelectorAll('input[type="radio"]');
+                const isAnswered = Array.from(radios).some(radio => radio.checked);
+                if (!isAnswered) unansweredCount++;
+            });
+
+            if (unansweredCount > 0) {
+                alert(`Please answer all ${unansweredCount} remaining questions!`);
+                return false;
+            }
+            return true;
+        }
+
+
+        function updateProgress(percent) {
+            document.getElementById('progress').style.width = percent + '%';
+        }
+
+
+        function calculateOCEANScores() {
+            const scores = {
+                openness: 0,
+                conscientiousness: 0,
+                extraversion: 0,
+                agreeableness: 0,
+                neuroticism: 0
+            };
+
+
+            ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism'].forEach(trait => {
+                for (let i = 1; i <= 5; i++) {
+                    const selected = document.querySelector(`input[name="${trait}_${i}"]:checked`);
+                    if (selected) scores[trait] += parseInt(selected.value);
+                }
+                scores[trait] = (scores[trait] / 5).toFixed(1);
+            });
+
+            return scores;
+        }
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+
+        function loadNumericalQuestions() {
+            const container = document.getElementById('numerical-questions-container');
+            container.innerHTML = '';
+            const shuffledQuestions = shuffleArray(numericalQuestionsData);
+
+            shuffledQuestions.slice(0, 10).forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+
+                questionStartTimes[question.questionName] = Date.now();
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${question.questionText}</p>
+                    <div class="likert-scale">
+                        ${question.answerChoices.map(choice => `
+                            <label>
+                                <input type="radio" name="${question.questionName}" value="${choice.value}" 
+                                    onchange="recordResponseTime('${question.questionName}')">
+                                ${choice.text}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function recordResponseTime(questionName) {
+            const responseTime = (Date.now() - questionStartTimes[questionName]) / 1000;
+            questionStartTimes[questionName + '_time'] = responseTime;
+        }
+
+        function loadVerbalReasoningQuestions() {
+            const container = document.getElementById('verbal-reasoning-questions-container');
+            container.innerHTML = '';
+            const shuffledQuestions = shuffleArray(verbalReasoningQuestionsData);
+
+            shuffledQuestions.slice(0, 10).forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                let answerChoicesHTML = question.answerChoices.map(choice => `
+                    <label>
+                        <input type="radio" name="${question.questionName}" value="${choice.value}">
+                        ${choice.text}
+                    </label>
+                `).join('');
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${question.questionText}</p>
+                    <div class="likert-scale" style="flex-direction: column; align-items: flex-start;">${answerChoicesHTML}</div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function loadPerceptualQuestions() {
+            const container = document.getElementById('perceptual-aptitude-questions-container');
+            container.innerHTML = '';
+            const shuffledQuestions = shuffleArray(perceptualQuestionsData);
+
+            shuffledQuestions.slice(0, 10).forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${question.questionText}</p>
+                    <div class="likert-scale">
+                        ${question.answerChoices.map(choice => `
+                            <label><input type="radio" name="${question.questionName}" value="${choice.value}">${choice.text}</label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function loadAbstractReasoningQuestions() {
+            const container = document.getElementById('abstract-reasoning-questions-container');
+            container.innerHTML = '';
+            const shuffledQuestions = shuffleArray(abstractReasoningQuestionsData);
+
+            shuffledQuestions.slice(0, 10).forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                let questionImageHTML = '';
+                if (question.questionImage) {
+                    questionImageHTML = `<img src="${question.questionImage}" alt="Question Image" style="max-width: 200px; margin-bottom: 10px;">`;
+                }
+
+                let answerChoicesHTML = question.answerChoices.map(choice => `
+                    <label>
+                        <input type="radio" name="${question.questionName}" value="${choice.value}">
+                        ${choice.text}
+                    </label>
+                `).join('');
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${question.questionText}</p>
+                    ${questionImageHTML}
+                    <div class="likert-scale" style="flex-direction: column; align-items: flex-start;">${answerChoicesHTML}</div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function loadSpatialQuestions() {
+            const container = document.getElementById('spatial-questions-container');
+            container.innerHTML = '';
+            const shuffledQuestions = shuffleArray(spatialQuestionsData);
+
+            shuffledQuestions.slice(0, 10).forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                let questionImageHTML = '';
+                if (question.questionImage) {
+                    questionImageHTML = `<img src="${question.questionImage}" alt="Question Image" style="max-width: 200px; margin-bottom: 10px;">`;
+                }
+
+                let answerChoicesHTML = question.answerChoices.map(choice => `
+                    <label>
+                        <input type="radio" name="${question.questionName}" value="${choice.value}">
+                        ${choice.text}
+                    </label>
+                `).join('');
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${question.questionText}</p>
+                    ${questionImageHTML}
+                    <div class="likert-scale" style="flex-direction: column; align-items: flex-start;">${answerChoicesHTML}</div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+
+        function calculateNumericalScores() {
+            let baseScore = 0;
+            let bonusScore = 0;
+
+            numericalQuestionsData.slice(0, 10).forEach(question => {
+                const selected = document.querySelector(`input[name="${question.questionName}"]:checked`);
+                if (selected && selected.value === question.correctAnswer) {
+                    baseScore += 1;
+                    const responseTime = questionStartTimes[question.questionName + '_time'] || 30;
+                    bonusScore += Math.max(0, 0.5 - (responseTime / 60));
+                }
+            });
+
+            return Math.min(10, baseScore + bonusScore).toFixed(1);
+        }
+
+        function calculateVerbalReasoningScores() {
+            let score = 0;
+            const displayedQuestions = document.querySelectorAll('#verbal-reasoning-questions-container .question');
+
+            displayedQuestions.forEach(questionDiv => {
+                const questionIndex = Array.from(displayedQuestions).indexOf(questionDiv);
+                const questionData = verbalReasoningQuestionsData[questionIndex];
+
+                if (questionData) {
+                    const selected = questionDiv.querySelector(`input[name="${questionData.questionName}"]:checked`);
+                    if (selected && selected.value === questionData.correctAnswer) {
+                        score++;
+                    }
+                }
+            });
+            return score;
+        }
+
+        function calculatePerceptualScores() {
+            let score = 0;
+            const displayedQuestions = document.querySelectorAll('#perceptual-aptitude-questions-container .question');
+
+            displayedQuestions.forEach(questionDiv => {
+                const questionIndex = Array.from(displayedQuestions).indexOf(questionDiv);
+                const questionData = perceptualQuestionsData[questionIndex];
+
+                if (questionData) {
+                    const selected = questionDiv.querySelector(`input[name="${questionData.questionName}"]:checked`);
+                    if (selected && selected.value === questionData.correctAnswer) {
+                        score++;
+                    }
+                }
+            });
+            return score;
+        }
+
+        function calculateAbstractReasoningScores() {
+            let score = 0;
+            const displayedQuestions = document.querySelectorAll('#abstract-reasoning-questions-container .question');
+
+            displayedQuestions.forEach(questionDiv => {
+                const questionIndex = Array.from(displayedQuestions).indexOf(questionDiv);
+                const questionData = abstractReasoningQuestionsData[questionIndex];
+
+                if (questionData) {
+                    const selected = questionDiv.querySelector(`input[name="${questionData.questionName}"]:checked`);
+                    if (selected && selected.value === questionData.correctAnswer) {
+                        score++;
+                    }
+                }
+            });
+            return score;
+        }
+
+        function calculateSpatialScores() {
+            let score = 0;
+            const displayedQuestions = document.querySelectorAll('#spatial-questions-container .question');
+
+            displayedQuestions.forEach(questionDiv => {
+                const questionIndex = Array.from(displayedQuestions).indexOf(questionDiv);
+                const questionData = spatialQuestionsData[questionIndex];
+
+                if (questionData) {
+                    const selected = questionDiv.querySelector(`input[name="${questionData.questionName}"]:checked`);
+                    if (selected && selected.value === questionData.correctAnswer) {
+                        score++;
+                    }
+                }
+            });
+            return score;
+        }
+
+
+        function showResults() {
+            clearInterval(timer);
+
+
+            const oceanScores = calculateOCEANScores();
+            const numericalScore = calculateNumericalScores();
+            const verbalReasoningScore = calculateVerbalReasoningScores();
+            const perceptualScore = calculatePerceptualScores();
+            const abstractReasoningScore = calculateAbstractReasoningScores();
+            const spatialScore = calculateSpatialScores();
+
+
+            const payload = {
+                openness: parseFloat(oceanScores.openness),
+                conscientiousness: parseFloat(oceanScores.conscientiousness),
+                extraversion: parseFloat(oceanScores.extraversion),
+                agreeableness: parseFloat(oceanScores.agreeableness),
+                neuroticism: parseFloat(oceanScores.neuroticism),
+                numerical: parseFloat(numericalScore),
+                spatiall: parseFloat(spatialScore),
+                perceptual: parseFloat(perceptualScore),
+                abstract_reasoning: parseFloat(abstractReasoningScore),
+                verbal: parseFloat(verbalReasoningScore)
+            };
+
+            console.log("Assessment results payload:", payload);
+
+
+            const resultsSection = document.getElementById('results-section');
+            const resultContainer = document.getElementById('career-results');
+
+
+            document.querySelector('.section.active').classList.remove('active');
+            resultsSection.classList.add('active');
+            updateProgress(100);
+
+
+            resultContainer.innerHTML = `
+                <div class="loading-message">
+                    <p>Analyzing your results...</p>
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+
+
+            fetch("/career/submit", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Server response data:", data);
+                    displayResults(data, payload);
+                })
+                .catch(error => {
+                    console.error("Error fetching results:", error);
+                    resultContainer.innerHTML = `
+                    <div class="error-message">
+                        <h3>Error Loading Results</h3>
+                        <p>${error.message}</p>
+                        <button onclick="showResults()" class="retry-button">Try Again</button>
+                    </div>
+                `;
+                });
+        }
+
+        function displayResults(data, scores) {
+            const resultContainer = document.getElementById('career-results');
+
+
+            resultContainer.innerHTML = '';
+
+
+            let html = `
+                <div class="results-summary">
+    <h3>Your Assessment Summary</h3>
+    <div class="scores-grid">
+        <div class="personality-scores">
+            <h4>Personality Traits</h4>
+            <p><span>Openness:</span> ${scores.openness * 2}/10</p>
+            <p><span>Conscientiousness:</span> ${scores.conscientiousness * 2}/10</p>
+            <p><span>Extraversion:</span> ${scores.extraversion * 2}/10</p>
+            <p><span>Agreeableness:</span> ${scores.agreeableness * 2}/10</p>
+            <p><span>Neuroticism:</span> ${scores.neuroticism * 2}/10</p>
+        </div>
+        <div class="aptitude-scores">
+            <h4>Cognitive Aptitudes</h4>
+            <p><span>Numerical:</span> ${scores.numerical}/10</p>
+            <p><span>Verbal:</span> ${scores.verbal}/10</p>
+            <p><span>Perceptual:</span> ${scores.perceptual}/10</p>
+            <p><span>Abstract:</span> ${scores.abstract_reasoning}/10</p>
+            <p><span>Spatial:</span> ${scores.spatiall}/10</p>
+        </div>
+    </div>
+</div>
+<div class="career-recommendations">
+            `;
+
+
+            if (data.matches && data.matches.length > 0) {
+                html += `<h3>Recommended Careers</h3>`;
+                data.matches.forEach((match, index) => {
+                    const confidence = match.confidence || (match.score ? (match.score * 100).toFixed(2) : 'N/A');
+                    html += `
+                        <div class="career-match">
+                            <h4>${index + 1}. ${match.career}</h4>
+                            <p class="match-score">Match: ${confidence}%</p>
+                            ${match.reason ? `<p class="match-reason">${match.reason}</p>` : ''}
+                            <button type="button" onclick="showResults()">Submit</button>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p class="no-matches">No specific career matches found based on your assessment.</p>`;
+            }
+
+            html += `</div>`;
+
+
+            html += `
+                <div class="results-actions">
+                    <button onclick="window.location.reload()" class="retake-button">Retake Assessment</button>
+                    <button type="button" onclick="showResults()">Submit</button>
+                </div>
+            `;
+
+            resultContainer.innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>

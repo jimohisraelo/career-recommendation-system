@@ -1,0 +1,219 @@
+Sent:
+{
+    "O_score": 1.8,
+    "C_score": 4,
+    "E_score": 4.2,
+    "A_score": 1.8,
+    "N_score": 4.2,
+    "Numerical Aptitude": 4,
+    "Spatial Aptitude": 3,
+    "Perceptual Aptitude": 1,
+    "Abstract Reasoning": 1,
+    "Verbal Reasoning": 3
+}
+
+Got:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 14.5,
+      "reason": "Your strong extraversion and high ability in emotional stability make you ideal for this career. It demands excellence in confidence in social and team settings, alongside strength in resilience and calm under pressure and organization, responsibility, and reliability."
+    },
+    {
+      "career": "Quality Control Inspector",
+      "confidence": 12.0,
+      "reason": "This field aligns well with your high extraversion and emotional stability. Professionals here often thrive with strong confidence in social and team settings and a solid foundation in organization, responsibility, and reliability."
+    },
+    {
+      "career": "Police Officer",
+      "confidence": 11.82,
+      "reason": "Your top strengths in extraversion, emotional stability, and conscientiousness support success in this area. It benefits from sharp resilience and calm under pressure and dependable organization, responsibility, and reliability."
+    }
+  ]
+}
+
+
+HTTP Code: 200
+Error: 
+
+Sent:
+{
+    "O_score": 1.8,
+    "C_score": 4,
+    "E_score": 4.2,
+    "A_score": 1.8,
+    "N_score": 4.2,
+    "Numerical Aptitude": 4,
+    "Spatial Aptitude": 3,
+    "Perceptual Aptitude": 1,
+    "Abstract Reasoning": 1,
+    "Verbal Reasoning": 3
+}
+
+Got:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 14.5,
+      "reason": "Your strong extraversion and high ability in emotional stability make you ideal for this career. It demands excellence in confidence in social and team settings, alongside strength in resilience and calm under pressure and organization, responsibility, and reliability."
+    },
+    {
+      "career": "Quality Control Inspector",
+      "confidence": 12.0,
+      "reason": "This field aligns well with your high extraversion and emotional stability. Professionals here often thrive with strong confidence in social and team settings and a solid foundation in organization, responsibility, and reliability."
+    },
+    {
+      "career": "Police Officer",
+      "confidence": 11.82,
+      "reason": "Your top strengths in extraversion, emotional stability, and conscientiousness support success in this area. It benefits from sharp resilience and calm under pressure and dependable organization, responsibility, and reliability."
+    }
+  ]
+}
+
+
+HTTP Code: 200
+Error: 
+
+Sent:
+{
+    "O_score": 1.8,
+    "C_score": 4,
+    "E_score": 4.2,
+    "A_score": 1.8,
+    "N_score": 4.2,
+    "Numerical Aptitude": 4,
+    "Spatial Aptitude": 3,
+    "Perceptual Aptitude": 1,
+    "Abstract Reasoning": 1,
+    "Verbal Reasoning": 3
+}
+
+Got:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 14.5,
+      "reason": "Your strong extraversion and high ability in emotional stability make you ideal for this career. It demands excellence in confidence in social and team settings, alongside strength in resilience and calm under pressure and organization, responsibility, and reliability."
+    },
+    {
+      "career": "Quality Control Inspector",
+      "confidence": 12.0,
+      "reason": "This field aligns well with your high extraversion and emotional stability. Professionals here often thrive with strong confidence in social and team settings and a solid foundation in organization, responsibility, and reliability."
+    },
+    {
+      "career": "Police Officer",
+      "confidence": 11.82,
+      "reason": "Your top strengths in extraversion, emotional stability, and conscientiousness support success in this area. It benefits from sharp resilience and calm under pressure and dependable organization, responsibility, and reliability."
+    }
+  ]
+}
+
+
+HTTP Code: 200
+Error: 
+
+Sent:
+{
+    "O_score": 3.6,
+    "C_score": 4.4,
+    "E_score": 4,
+    "A_score": 5.6,
+    "N_score": 4.8,
+    "Numerical Aptitude": 4.1,
+    "Spatial Aptitude": 4,
+    "Perceptual Aptitude": 3,
+    "Abstract Reasoning": 3,
+    "Verbal Reasoning": 3
+}
+
+Got:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 14.67,
+      "reason": "Your strong agreeableness and high ability in emotional stability make you ideal for this career. It demands excellence in cooperation and empathy, alongside strength in resilience and calm under pressure and organization, responsibility, and reliability."
+    },
+    {
+      "career": "Airline Pilot",
+      "confidence": 14.0,
+      "reason": "This field aligns well with your high agreeableness and emotional stability. Professionals here often thrive with strong cooperation and empathy and a solid foundation in organization, responsibility, and reliability."
+    },
+    {
+      "career": "Air Traffic Controller",
+      "confidence": 13.7,
+      "reason": "Your top strengths in agreeableness, emotional stability, and conscientiousness support success in this area. It benefits from sharp resilience and calm under pressure and dependable organization, responsibility, and reliability."
+    }
+  ]
+}
+
+
+HTTP Code: 200
+Error: 
+
+Flask Response:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 15.83,
+      "reason": "Your strong numerical aptitude and high ability in emotional stability make you ideal for this career. It demands excellence in quantitative analysis and logic, alongside strength in resilience and calm under pressure and cooperation and empathy."
+    },
+    {
+      "career": "Event Photographer",
+      "confidence": 13.0,
+      "reason": "This field aligns well with your high numerical aptitude and emotional stability. Professionals here often thrive with strong quantitative analysis and logic and a solid foundation in cooperation and empathy."
+    },
+    {
+      "career": "IT Support Specialist",
+      "confidence": 6.0,
+      "reason": "Your top strengths in numerical aptitude, emotional stability, and agreeableness support success in this area. It benefits from sharp resilience and calm under pressure and dependable cooperation and empathy."
+    }
+  ]
+}
+
+HTTP Code: 200
+Error: 
+
+📤 Sent to Flask:
+{
+    "O_score": 7.2,
+    "C_score": 4,
+    "E_score": 4.4,
+    "A_score": 4.4,
+    "N_score": 7.2,
+    "Numerical Aptitude": 2.8,
+    "Spatial Aptitude": 2,
+    "Perceptual Aptitude": 0,
+    "Abstract Reasoning": 4,
+    "Verbal Reasoning": 1
+}
+
+📥 Response:
+{
+  "matches": [
+    {
+      "career": "Interior Designer",
+      "confidence": 23.85,
+      "reason": "Your strong openness to experience and high ability in emotional stability make you ideal for this career. It demands excellence in creative thinking and innovation, alongside strength in resilience and calm under pressure and confidence in social and team settings."
+    },
+    {
+      "career": "Quality Control Inspector",
+      "confidence": 16.0,
+      "reason": "This field aligns well with your high openness to experience and emotional stability. Professionals here often thrive with strong creative thinking and innovation and a solid foundation in confidence in social and team settings."
+    },
+    {
+      "career": "Event Photographer",
+      "confidence": 9.0,
+      "reason": "Your top strengths in openness to experience, emotional stability, and extraversion support success in this area. It benefits from sharp resilience and calm under pressure and dependable confidence in social and team settings."
+    }
+  ]
+}
+
+
+HTTP Code: 200
+Error: 
+

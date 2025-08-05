@@ -1,0 +1,26 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+?>
+<?php
+/**
+ * Clean layout file with no Laminas branding or Bootstrap.
+ * Renders only the page content from the view.
+ */
+?>
+<?= $this->doctype() ?>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <?= $this->headTitle('Career Recommendation System')->setSeparator(' - ')->setAutoEscape(false) ?>
+    <?= $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+    <?= $this->headLink() ?>
+    <?= $this->headScript() ?>
+</head>
+<body>
+    <?= $this->content ?>
+    <?= $this->inlineScript() ?>
+</body>
+</html>
+
